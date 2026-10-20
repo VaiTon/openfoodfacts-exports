@@ -1,0 +1,30 @@
+name: Check published exports
+
+on:
+  schedule:
+    # The production export starts at 08:00 UTC; allow time for conversion/upload.
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-published-exports
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Check published product exports
+        run: python scripts/check_published_exports.py
